@@ -1,3 +1,6 @@
+// TODO: Organize world news articles for easy accessibility
+// TODO: create json of all the sites with world news to parse through
+
 var request = require('request');
 var cheerio = require('cheerio');
 var URL = require('url-parse');
