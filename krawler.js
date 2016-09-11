@@ -17,6 +17,39 @@ request(pageToVisit, function(error, response, body){
     console.log("status code: " + response.statusCode);
     if(response.statusCode === 200){
         var $ = cheerio.load(body);
-        console.log("Page body: " + $('body').text());
+        // var divs = $('div').attr()
+        var linksToNews = $('.story-headline').find('a')
+        console.log("Page section: " + $('section').text());
+        // console.log(linksToNews)
+        // divs.forEach(function(element) {
+        //     console.log(element)
+        // }) 
+
+        // for (var key in linksToNews) {
+        //     if (linksToNews.hasOwnProperty(key)) {
+        //         console.log(key + " -> " + linksToNews[key]);
+        //     }
+        // };
     }
+    collectTheLinks(linksToNews)
 });
+
+function searchForLinksToNews($, word){
+
+}
+
+function collectTheLinks($){
+    var links = [];
+
+    var absoluteLinks = $("a[href^='http']");
+    absoluteLinks.each(function(){
+        links.push($(this).attr('href'));
+    })
+
+    console.log('found these story links ' + links)
+    console.log('there are  links ' + links.length)
+}
+
+function visitPage(){
+
+}
