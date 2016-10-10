@@ -7,42 +7,53 @@ var URL = require('url-parse');
 
 // Load the LODASH .
 var _ = require('cheerio/node_modules/lodash');
-
-
 var pageToVisit = 'https://www.washingtonpost.com/world/';
 
-
-console.log("We are going to be visiting " + pageToVisit + "and extracting the world news from it")
-
 function visitPage(pageToVisit){
-    request(pageToVisit, function(error, response, body){
-        if(error){
-            console.log("error:" + error)
+    return new Promise((resolve, reject) => {
+    // select http or https module, depending on reqested url
+    const lib = pageToVisit.startsWith('https') ? require('https') : require('http');
+    const request = lib.get(pageToVisit, (response) => {
+      // handle http errors
+        if (response.statusCode < 200 || response.statusCode > 299) {
+            reject(new Error('Failed to load page, status code: ' + response.statusCode));
         }
-        console.log("status code: " + response.statusCode);
-        if(response.statusCode === 200){
-            var $ = cheerio.load(body);
-            collectTheLinks($, pageToVisit)
-        }
+        const body = []
+      // temporary data holder
+        // console.log(response)
+
+        response.on('data', (chunk) => {
+            const $ = cheerio.load(chunk)
+            var links = collectTheLinks($)
+            body.push(links)
+        });
+
+        response.on('end', () => resolve(body.join('')));
+        // return collectTheLinks(body);
+        
+    });
+    // handle connection errors of the request
+    request.on('error', (err) => reject(err))
     })
 }
 
 
-function collectTheLinks($, pageToVisit){
-    var links = [];
-
+function collectTheLinks($){
+    const links = [];
     var absoluteLinks = $("a[href^='https://www.washingtonpost.com/world']");
-    console.log(absoluteLinks)
+
     absoluteLinks.each(function(){
-        links.push({ link: $(this).attr('href') });
+        links.push( $(this).attr('href') );
     })
-    console.log('this is links', links)
+    console.log('links', links)
     return links
 }
 
-links = visitPage(pageToVisit)
+visitPage(pageToVisit).then((ticks) => {
+    console.log('this is llinks', ticks)
+})
 
-// console.log('found these story links ' + links)
-// console.log('there are  links ' + links.length)
+
+
 
 
