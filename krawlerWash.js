@@ -1,6 +1,7 @@
 // TODO: Organize world news articles for easy accessibility
 // TODO: create json of all the sites with world news to parse through
 
+// This returns array of all links on a given website
 var request = require('request');
 var cheerio = require('cheerio');
 var URL = require('url-parse');
@@ -28,8 +29,7 @@ function visitPage(pageToVisit){
             body.push(links)
         });
 
-        response.on('end', () => resolve(body.join('')));
-        // return collectTheLinks(body);
+        response.on('end', () => resolve(body.join(' ')));
         
     });
     // handle connection errors of the request
@@ -50,7 +50,8 @@ function collectTheLinks($){
 }
 
 visitPage(pageToVisit).then((ticks) => {
-    console.log('this is llinks', ticks)
+    console.log('this is links', ticks)
+    listOutLinks(ticks)
 })
 
 
